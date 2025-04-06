@@ -1,0 +1,11 @@
+# for devcontainer
+services:
+  deno_app:
+    build:
+      target: devcontainers
+      context: ./
+      dockerfile: Dockerfile
+    image: deno_img_devcontainer:latest
+    container_name: deno_container_devcontainer
+    volumes:
+      - ./:/app

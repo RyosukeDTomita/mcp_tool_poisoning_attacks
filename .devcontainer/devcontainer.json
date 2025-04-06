@@ -1,0 +1,28 @@
+{
+  "name": "dev-container-test", // 任意の値
+  "dockerComposeFile": [
+    "../compose.yaml",
+    "compose.yaml"
+  ],
+  "service": "deno_app", // compose.yamlのサービス名
+  "workspaceFolder": "/app",
+  "features": {
+    "ghcr.io/guiyomh/features/vim:0": {},
+    "ghcr.io/dhoeric/features/hadolint:1": {}
+  },
+  "overrideCommand": true,
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "formulahendry.auto-rename-tag",
+        "DavidAnson.vscode-markdownlint",
+        "exiasr.hadolint",
+        "oderwat.indent-rainbow",
+        "ionutvmi.path-autocomplete",
+        "mushan.vscode-paste-image",
+        "streetsidesoftware.code-spell-checker",
+        "denoland.vscode-deno",
+      ]
+    }
+  }
+}

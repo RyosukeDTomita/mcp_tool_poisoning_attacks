@@ -1,0 +1,9 @@
+services:
+  deno_app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: deno_img:latest
+    container_name: deno_container
+    env_file:
+      - ./<your-project>/.env # FIXME
