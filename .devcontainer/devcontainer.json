@@ -4,7 +4,7 @@
     "../compose.yaml",
     "compose.yaml"
   ],
-  "service": "deno_app", // compose.yamlのサービス名
+  "service": "mcp_client", // compose.yamlのサービス名
   "workspaceFolder": "/app",
   "features": {
     "ghcr.io/guiyomh/features/vim:0": {},
