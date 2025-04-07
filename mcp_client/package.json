@@ -7,8 +7,8 @@
     ".": "./dist/index.js"
   },
   "scripts": {
-    "bundle": "yarn run format:write && yarn run package",
-    "format:write": "npx prettier --write .",
+    "bundle": "yarn run format && yarn run package",
+    "format": "npx prettier --write .",
     "lint": "eslint .",
     "package": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript"
   },
