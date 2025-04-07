@@ -1,0 +1,28 @@
+{
+  "name": "mcp_client",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "UNLICENSED",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "bundle": "yarn run format:write && yarn run package",
+    "format:write": "prettier --write .",
+    "lint": "eslint .",
+    "package": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@types/node": "^22.14.0",
+    "glob": "^11.0.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@modelcontextprotocol/sdk": "^1.8.0",
+    "dotenv": "^16.4.7"
+  }
+}

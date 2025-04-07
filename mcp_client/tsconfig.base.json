@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "declaration": true, // .d.tsを出力する
+    "declarationMap": false, // .d.ts.mapを生成しない
+    "esModuleInterop": true, // importを使用できるようにする
+    "forceConsistentCasingInFileNames": true, // ファイル名の大文字小文字の不一致をエラーにする
+    "lib": ["ES2022"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "newLine": "lf", // 改行コードをLinuxスタイルにする
+    "noImplicitAny": true, // 暗黙のany型を禁止
+    "noUnusedLocals": true, // 未使用のローカル変数をエラーにする
+    "noUnusedParameters": false, // 未使用の関数引数は許容する
+    "pretty": true, // コンパイラの出力を見やすく整形して表示
+    "sourceMap": true, // ソースマップを生成する
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "ES2022"
+  }
+}
