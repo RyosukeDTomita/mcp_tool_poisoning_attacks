@@ -1,21 +1,15 @@
-import dotenv from "dotenv";
 import { MCPClient } from "./mcp_client";
-
-function getAnthropicApiKey() {
-  dotenv.config();
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error(
-      "Anthropic API key is not set in the environment variables.",
-    );
-  }
-  return apiKey;
-}
+import { getAnthropicApiKey } from "./config";
 
 async function main() {
   const apiKey = getAnthropicApiKey();
-  console.log(apiKey);
-  // const mcpClient = new MCPClient(process.env.ANTHROPIC_API_KEY!);
+  const mcpClient = new MCPClient(apiKey);
+  // MCP Serverの起動
+  // ユーザからの入力をAnthropic APIに送信
+  // MCP Serverへのリクエストに使うJSON?を作成
+  // MCP Serverにリクエストを送信する。
+  // MCP Serverからのレスポンスを受け取る
+  // TODO: 処理に失敗した場合とかループしたほうが良さそうだけど，めんどいので一旦これで
 }
 
 main();
