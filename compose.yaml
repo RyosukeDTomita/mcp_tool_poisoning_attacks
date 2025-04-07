@@ -1,9 +1,9 @@
 services:
-  deno_app:
+  mcp_client:
     build:
-      context: ./
+      context: ./mcp_client
       dockerfile: Dockerfile
-    image: deno_img:latest
-    container_name: deno_container
+    image: mcp_client_img:latest
+    container_name: mcp_client_container
     env_file:
-      - ./<your-project>/.env # FIXME
+      - ./mcp_client/.env

@@ -8,7 +8,7 @@
   },
   "scripts": {
     "bundle": "yarn run format:write && yarn run package",
-    "format:write": "prettier --write .",
+    "format:write": "npx prettier --write .",
     "lint": "eslint .",
     "package": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript"
   },
@@ -18,6 +18,8 @@
     "@rollup/plugin-typescript": "^12.1.2",
     "@types/node": "^22.14.0",
     "glob": "^11.0.1",
+    "rollup": "^4.39.0",
+    "tslib": "^2.8.1",
     "typescript": "^5.8.3"
   },
   "dependencies": {

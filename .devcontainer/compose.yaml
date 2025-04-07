@@ -1,11 +1,11 @@
 # for devcontainer
 services:
-  deno_app:
+  mcp_client:
     build:
       target: devcontainers
-      context: ./
+      context: ./mcp_client
       dockerfile: Dockerfile
-    image: deno_img_devcontainer:latest
-    container_name: deno_container_devcontainer
+    image: mcp_client_image_devcontainer:latest
+    container_name: mcp_client_devcontainer
     volumes:
       - ./:/app
