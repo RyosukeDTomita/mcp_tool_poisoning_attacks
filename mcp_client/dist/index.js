@@ -5,7 +5,7 @@ async function main() {
     const apiKey = (0, config_1.getAnthropicApiKey)();
     const mcpJsonPath = "../mcpservers.json";
     const mcpJson = (0, config_1.parseMCPJson)(mcpJsonPath);
-    console.log(`-----servicename=${Object.keys(mcpJson.mcpServers)[0]}----`);
+    console.log(`-----servicename=${Object.keys(mcpJson.mcpServers)[0]}-----`);
     new mcp_client_1.MCPClient(apiKey);
     // MCP Serverの起動
     // ユーザからの入力をAnthropic APIに送信

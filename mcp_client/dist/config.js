@@ -1,6 +1,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAnthropicApiKey = getAnthropicApiKey;
 exports.parseMCPJson = parseMCPJson;
+exports.getServiceNames = getServiceNames;
+exports.createMcpServerCommand = createMcpServerCommand;
 const tslib_1 = require("tslib");
 const dotenv_1 = tslib_1.__importDefault(require("dotenv"));
 const fs_1 = tslib_1.__importDefault(require("fs"));
@@ -39,5 +41,42 @@ function parseMCPJson(mcpJsonPath) {
     catch (error) {
         throw new Error(`Failed to parse MCP JSON file: ${error.message || "Unknown error"}`);
     }
+}
+/**
+ * パースされたMCP JSONからサービス名のリストを取得します
+ *
+ * @param mcpJson - パースされたMCP JSON
+ * @returns サービス名の配列
+ */
+function getServiceNames(mcpJson) {
+    return Object.keys(mcpJson.mcpServers);
+}
+/**
+ * 指定されたサービスに対応するMCPサーバーコマンドを生成します
+ *
+ * @param mcpJson - パースされたMCP JSON
+ * @param serviceName - サービス名
+ * @returns MCP サーバーを起動するコマンド
+ * @throws {Error} 指定されたサービスが存在しない場合
+ */
+function createMcpServerCommand(mcpJson, serviceName) {
+    const serverConfig = mcpJson.mcpServers[serviceName];
+    if (!serverConfig) {
+        throw new Error(`Unsupported service: ${serviceName}`);
+    }
+    // 環境変数部分の構築
+    let envString = "";
+    if (serverConfig.env) {
+        envString = Object.entries(serverConfig.env)
+            .map(([key, value]) => `${key}=${value}`)
+            .join(" ");
+        if (envString) {
+            envString += " ";
+        }
+    }
+    // コマンドと引数の構築
+    const command = serverConfig.command;
+    const args = serverConfig.args ? serverConfig.args.join(" ") : "";
+    return `${envString}${command} ${args}`.trim();
 }
 //# sourceMappingURL=config.js.map

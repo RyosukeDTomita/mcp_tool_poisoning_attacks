@@ -14,3 +14,19 @@ export declare function getAnthropicApiKey(): string;
  * @throws {Error} ファイルの読み込みやパースに失敗した場合
  */
 export declare function parseMCPJson(mcpJsonPath: string): any;
+/**
+ * パースされたMCP JSONからサービス名のリストを取得します
+ *
+ * @param mcpJson - パースされたMCP JSON
+ * @returns サービス名の配列
+ */
+export declare function getServiceNames(mcpJson: any): string[];
+/**
+ * 指定されたサービスに対応するMCPサーバーコマンドを生成します
+ *
+ * @param mcpJson - パースされたMCP JSON
+ * @param serviceName - サービス名
+ * @returns MCP サーバーを起動するコマンド
+ * @throws {Error} 指定されたサービスが存在しない場合
+ */
+export declare function createMcpServerCommand(mcpJson: any, serviceName: string): string;
