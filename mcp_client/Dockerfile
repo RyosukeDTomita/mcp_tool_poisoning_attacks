@@ -8,6 +8,6 @@ COPY . .
 WORKDIR /app/mcp_client
 RUN yarn run bundle
 
-# FROM gcr.io/distroless/cc-debian12:latest AS run
-# COPY --from=compile /app/mcp_client/main /app/main
-# ENTRYPOINT ["/app/main"]
+FROM gcr.io/distroless/nodejs22-debian12 AS deploy
+COPY --from=compile /app/dist/index.js .
+ENTRYPOINT ["nodejs/bin/node", "/app/dist/index.js"]

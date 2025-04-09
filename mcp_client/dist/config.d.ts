@@ -20,13 +20,17 @@ export declare function parseMCPJson(mcpJsonPath: string): any;
  * @param mcpJson - パースされたMCP JSON
  * @returns サービス名の配列
  */
-export declare function getServiceNames(mcpJson: any): string[];
+export declare function getServerNames(mcpJson: any): string[];
 /**
- * 指定されたサービスに対応するMCPサーバーコマンドを生成します
+ * 指定されたサーバ名に対応するMCPサーバーコマンドを生成します
+ * envが指定されている場合は，コマンド実行時にセットします。
  *
  * @param mcpJson - パースされたMCP JSON
- * @param serviceName - サービス名
+ * @param serverName - サーバ名
  * @returns MCP サーバーを起動するコマンド
- * @throws {Error} 指定されたサービスが存在しない場合
+ * @throws {Error} 指定されたサーバが存在しない場合
  */
-export declare function createMcpServerCommand(mcpJson: any, serviceName: string): string;
+export declare function createMcpServerCommand(
+  mcpJson: any,
+  serverName: string,
+): string;

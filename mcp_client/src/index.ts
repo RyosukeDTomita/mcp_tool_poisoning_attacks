@@ -1,20 +1,18 @@
 import { MCPClient } from "./mcp_client";
-import { getAnthropicApiKey, parseMCPJson } from "./config";
+import { getAnthropicApiKey, parseMCPJson, getServerNames } from "./config";
 
 async function main() {
   const apiKey = getAnthropicApiKey();
   const mcpJsonPath = "../mcpservers.json";
   const mcpJson = parseMCPJson(mcpJsonPath);
-  
-  console.log(`-----servicename=${Object.keys(mcpJson.mcpServers)[0]}-----`);
-  
+  const serverNames = getServerNames(mcpJson);
+  const serverName = serverNames[0]; // TODO: 一旦1つのサーバのみで動作するようにする
+
   const mcpClient = new MCPClient(apiKey);
-  // MCP Serverの起動
-  // ユーザからの入力をAnthropic APIに送信
-  // MCP Serverへのリクエストに使うJSON?を作成
-  // MCP Serverにリクエストを送信する。
-  // MCP Serverからのレスポンスを受け取る
-  // TODO: 処理に失敗した場合とかループしたほうが良さそうだけど，めんどいので一旦これで
+  // MCP Serverに接続し，利用可能なツールの一覧を取得する
+  // ユーザからの入力をを受け取る
+  // ユーザからのメッセージ + toolの情報を含んだリクエストを作成し，Anthropic APIを叩く
+  // レスポンスから使用可能なツールを選択し，ツールを使用する。使用可能なツールがない場合は，Anthropic APIのレスポンスをそのまま返す
 }
 
 main();

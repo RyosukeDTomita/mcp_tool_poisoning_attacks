@@ -20,8 +20,13 @@ export class MCPClient {
    * MCPClientのコンストラクタ
    *
    * @param ANTHROPIC_API_KEY - Anthropic APIの認証キー
+   * @throws Error - ANTHROPIC_API_KEYが指定されていない場合
    */
   constructor(ANTHROPIC_API_KEY: string) {
+    if (!ANTHROPIC_API_KEY) {
+      throw new Error("ANTHROPIC_API_KEY is required");
+    }
+
     this.anthropic = new Anthropic({
       apiKey: ANTHROPIC_API_KEY,
     });

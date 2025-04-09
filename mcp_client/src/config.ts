@@ -49,40 +49,44 @@ export function parseMCPJson(mcpJsonPath: string) {
  * @param mcpJson - パースされたMCP JSON
  * @returns サービス名の配列
  */
-export function getServiceNames(mcpJson: any): string[] {
+export function getServerNames(mcpJson: any): string[] {
   return Object.keys(mcpJson.mcpServers);
 }
 
 /**
- * 指定されたサービスに対応するMCPサーバーコマンドを生成します
+ * 指定されたサーバ名に対応するMCPサーバーコマンドを生成します
+ * envが指定されている場合は，コマンド実行時にセットします。
  *
  * @param mcpJson - パースされたMCP JSON
- * @param serviceName - サービス名
+ * @param serverName - サーバ名
  * @returns MCP サーバーを起動するコマンド
- * @throws {Error} 指定されたサービスが存在しない場合
+ * @throws {Error} 指定されたサーバが存在しない場合
  */
-export function createMcpServerCommand(mcpJson: any, serviceName: string): string {
-  const serverConfig = mcpJson.mcpServers[serviceName];
-  
+export function createMcpServerCommand(
+  mcpJson: any,
+  serverName: string,
+): string {
+  const serverConfig = mcpJson.mcpServers[serverName];
+
   if (!serverConfig) {
-    throw new Error(`Unsupported service: ${serviceName}`);
+    throw new Error(`Unsupported server: ${serverName}`);
   }
-  
+
   // 環境変数部分の構築
   let envString = "";
   if (serverConfig.env) {
     envString = Object.entries(serverConfig.env)
       .map(([key, value]) => `${key}=${value}`)
       .join(" ");
-    
+
     if (envString) {
       envString += " ";
     }
   }
-  
+
   // コマンドと引数の構築
   const command = serverConfig.command;
   const args = serverConfig.args ? serverConfig.args.join(" ") : "";
-  
+
   return `${envString}${command} ${args}`.trim();
 }

@@ -8,19 +8,23 @@ const index_js_1 = require("@modelcontextprotocol/sdk/client/index.js");
  * AnthropicのAPIと連携し、MCPサーバーとのインターフェースを提供します
  */
 class MCPClient {
-    anthropic;
-    mcp;
-    /**
-     * MCPClientのコンストラクタ
-     *
-     * @param ANTHROPIC_API_KEY - Anthropic APIの認証キー
-     */
-    constructor(ANTHROPIC_API_KEY) {
-        this.anthropic = new sdk_1.Anthropic({
-            apiKey: ANTHROPIC_API_KEY,
-        });
-        this.mcp = new index_js_1.Client({ name: "mcp-client", version: "0.0.1" });
+  anthropic;
+  mcp;
+  /**
+   * MCPClientのコンストラクタ
+   *
+   * @param ANTHROPIC_API_KEY - Anthropic APIの認証キー
+   * @throws Error - ANTHROPIC_API_KEYが指定されていない場合
+   */
+  constructor(ANTHROPIC_API_KEY) {
+    if (!ANTHROPIC_API_KEY) {
+      throw new Error("ANTHROPIC_API_KEY is required");
     }
+    this.anthropic = new sdk_1.Anthropic({
+      apiKey: ANTHROPIC_API_KEY,
+    });
+    this.mcp = new index_js_1.Client({ name: "mcp-client", version: "0.0.1" });
+  }
 }
 exports.MCPClient = MCPClient;
 //# sourceMappingURL=mcp_client.js.map
