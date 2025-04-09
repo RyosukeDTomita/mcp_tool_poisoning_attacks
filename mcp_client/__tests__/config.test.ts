@@ -1,4 +1,4 @@
-import { getAnthropicApiKey, parseMCPJson } from "../src/config";
+import { getAnthropicApiKey, parseMCPJson, getServiceNames, createMcpServerCommand } from "../src/config";
 
 describe("getAnthropicApiKey", () => {
   test("getAnthropicApiKey returns API key when set", () => {
@@ -28,6 +28,9 @@ describe("create MCP Server Command", () => {
   test("createMCPServerCommand returns correct command", () => {
     const mcpJson = parseMCPJson("../mcpservers.json");
     const serviceNames = getServiceNames(mcpJson);
-    const command = createMcpServerCommand(mcpJson, serviceNames[0])
-
-}
+    for (const serviceName of serviceNames) {
+      const command = createMcpServerCommand(mcpJson, serviceName);
+      expect(command).toBeNull();
+    }
+  });
+});

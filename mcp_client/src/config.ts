@@ -42,3 +42,47 @@ export function parseMCPJson(mcpJsonPath: string) {
     );
   }
 }
+
+/**
+ * パースされたMCP JSONからサービス名のリストを取得します
+ *
+ * @param mcpJson - パースされたMCP JSON
+ * @returns サービス名の配列
+ */
+export function getServiceNames(mcpJson: any): string[] {
+  return Object.keys(mcpJson.mcpServers);
+}
+
+/**
+ * 指定されたサービスに対応するMCPサーバーコマンドを生成します
+ *
+ * @param mcpJson - パースされたMCP JSON
+ * @param serviceName - サービス名
+ * @returns MCP サーバーを起動するコマンド
+ * @throws {Error} 指定されたサービスが存在しない場合
+ */
+export function createMcpServerCommand(mcpJson: any, serviceName: string): string {
+  const serverConfig = mcpJson.mcpServers[serviceName];
+  
+  if (!serverConfig) {
+    throw new Error(`Unsupported service: ${serviceName}`);
+  }
+  
+  // 環境変数部分の構築
+  let envString = "";
+  if (serverConfig.env) {
+    envString = Object.entries(serverConfig.env)
+      .map(([key, value]) => `${key}=${value}`)
+      .join(" ");
+    
+    if (envString) {
+      envString += " ";
+    }
+  }
+  
+  // コマンドと引数の構築
+  const command = serverConfig.command;
+  const args = serverConfig.args ? serverConfig.args.join(" ") : "";
+  
+  return `${envString}${command} ${args}`.trim();
+}
