@@ -1,8 +1,13 @@
 import { MCPClient } from "./mcp_client";
-import { getAnthropicApiKey } from "./config";
+import { getAnthropicApiKey, parseMCPJson } from "./config";
 
 async function main() {
   const apiKey = getAnthropicApiKey();
+  const mcpJsonPath = "../mcpservers.json";
+  const mcpJson = parseMCPJson(mcpJsonPath);
+  
+  console.log(`-----servicename=${Object.keys(mcpJson.mcpServers)[0]}-----`);
+  
   const mcpClient = new MCPClient(apiKey);
   // MCP Serverの起動
   // ユーザからの入力をAnthropic APIに送信

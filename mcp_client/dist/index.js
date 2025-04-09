@@ -1,20 +1,18 @@
 Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = require("tslib");
-const dotenv_1 = tslib_1.__importDefault(require("dotenv"));
-function getAnthropicApiKey() {
-  dotenv_1.default.config();
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error(
-      "Anthropic API key is not set in the environment variables.",
-    );
-  }
-  return apiKey;
-}
+const mcp_client_1 = require("./mcp_client");
+const config_1 = require("./config");
 async function main() {
-  const apiKey = getAnthropicApiKey();
-  console.log(apiKey);
-  // const mcpClient = new MCPClient(process.env.ANTHROPIC_API_KEY!);
+    const apiKey = (0, config_1.getAnthropicApiKey)();
+    const mcpJsonPath = "../mcpservers.json";
+    const mcpJson = (0, config_1.parseMCPJson)(mcpJsonPath);
+    console.log(`-----servicename=${Object.keys(mcpJson.mcpServers)[0]}----`);
+    new mcp_client_1.MCPClient(apiKey);
+    // MCP Serverの起動
+    // ユーザからの入力をAnthropic APIに送信
+    // MCP Serverへのリクエストに使うJSON?を作成
+    // MCP Serverにリクエストを送信する。
+    // MCP Serverからのレスポンスを受け取る
+    // TODO: 処理に失敗した場合とかループしたほうが良さそうだけど，めんどいので一旦これで
 }
 main();
 //# sourceMappingURL=index.js.map
