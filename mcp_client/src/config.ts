@@ -54,39 +54,33 @@ export function getServerNames(mcpJson: any): string[] {
 }
 
 /**
- * 指定されたサーバ名に対応するMCPサーバーコマンドを生成します
- * envが指定されている場合は，コマンド実行時にセットします。
+ * 指定されたサーバー名とパラメータタイプに対応する値を取得します
  *
  * @param mcpJson - パースされたMCP JSON
- * @param serverName - サーバ名
- * @returns MCP サーバーを起動するコマンド
- * @throws {Error} 指定されたサーバが存在しない場合
+ * @param serverName - サーバー名
+ * @param paramType - 取得するパラメータのタイプ ("command", "args", "env")
+ * @returns {object} 要求されたパラメータを含むオブジェクト
+ * @throws {Error} 指定されたサーバーが存在しない場合
  */
-export function createMcpServerCommand(
+export function getMcpParams(
   mcpJson: any,
   serverName: string,
-): string {
+  paramType: string,
+): { command?: string; args?: string[]; env?: Record<string, string> } {
   const serverConfig = mcpJson.mcpServers[serverName];
 
   if (!serverConfig) {
-    throw new Error(`Unsupported server: ${serverName}`);
+    throw new Error(`Server ${serverName} not found in MCP JSON`);
   }
 
-  // 環境変数部分の構築
-  let envString = "";
-  if (serverConfig.env) {
-    envString = Object.entries(serverConfig.env)
-      .map(([key, value]) => `${key}=${value}`)
-      .join(" ");
-
-    if (envString) {
-      envString += " ";
-    }
+  switch (paramType) {
+    case "command":
+      return { command: serverConfig.command };
+    case "args":
+      return { args: serverConfig.args };
+    case "env":
+      return { env: serverConfig.env || {} };
+    default:
+      throw new Error(`Unknown parameter type: ${paramType}`);
   }
-
-  // コマンドと引数の構築
-  const command = serverConfig.command;
-  const args = serverConfig.args ? serverConfig.args.join(" ") : "";
-
-  return `${envString}${command} ${args}`.trim();
 }

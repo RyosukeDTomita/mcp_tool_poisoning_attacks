@@ -22,15 +22,16 @@ export declare function parseMCPJson(mcpJsonPath: string): any;
  */
 export declare function getServerNames(mcpJson: any): string[];
 /**
- * 指定されたサーバ名に対応するMCPサーバーコマンドを生成します
- * envが指定されている場合は，コマンド実行時にセットします。
+ * 指定されたサーバー名とパラメータタイプに対応する値を取得します
  *
  * @param mcpJson - パースされたMCP JSON
- * @param serverName - サーバ名
- * @returns MCP サーバーを起動するコマンド
- * @throws {Error} 指定されたサーバが存在しない場合
+ * @param serverName - サーバー名
+ * @param paramType - 取得するパラメータのタイプ ("command", "args", "env")
+ * @returns {object} 要求されたパラメータを含むオブジェクト
+ * @throws {Error} 指定されたサーバーが存在しない場合
  */
-export declare function createMcpServerCommand(
-  mcpJson: any,
-  serverName: string,
-): string;
+export declare function getMcpParams(mcpJson: any, serverName: string, paramType: string): {
+    command?: string;
+    args?: string[];
+    env?: Record<string, string>;
+};

@@ -2,7 +2,7 @@ import {
   getAnthropicApiKey,
   parseMCPJson,
   getServerNames,
-  createMcpServerCommand,
+  getMcpParams,
 } from "../src/config";
 
 // モック用のMCP JSON
@@ -49,30 +49,25 @@ describe("getServerNames", () => {
   });
 });
 
-describe("createMcpServerCommand", () => {
-  test("githubのMCP Serverの名前をもとにgithubのコマンドが取得できること", () => {
-    const serverName = "github";
-    const command = createMcpServerCommand(mockMcpJson, serverName);
-
-    const expectedCommand =
-      "GITHUB_PERSONAL_ACCESS_TOKEN=token npx -y @modelcontextprotocol/server-github";
-    expect(command).toBe(expectedCommand);
+describe("getMCPCommand", () => {
+  test("指定したサーバー名に対応するcommandを返すこと", () => {
+    const command = getMcpParams(mockMcpJson, "github", "command");
+    expect(command.command).toBe("npx");
   });
+});
 
-  test("gitのMCP Serverの名前をもとにgitのコマンドが取得できること", () => {
-    const serverName = "git";
-    const command = createMcpServerCommand(mockMcpJson, serverName);
-
-    const expectedCommand =
-      "uv --directory ./servers/src/git run mcp-server-git";
-    expect(command).toBe(expectedCommand);
+describe("getMCPArgs", () => {
+  test("指定したサーバー名に対応するargsを返すこと", () => {
+    const command = getMcpParams(mockMcpJson, "github", "args");
+    expect(command.args).toEqual(["-y", "@modelcontextprotocol/server-github"]);
   });
+});
 
-  test("mcpservers.jsonに定義されていないMCP Serverを指定した場合には例外をスロー", () => {
-    const invalidServerName = "invalid-service";
-
-    expect(() =>
-      createMcpServerCommand(mockMcpJson, invalidServerName),
-    ).toThrow();
+describe("getMCPEnv", () => {
+  test("指定したサーバー名に対応するenvを返すこと", () => {
+    const command = getMcpParams(mockMcpJson, "github", "env");
+    expect(command.env).toEqual({
+      GITHUB_PERSONAL_ACCESS_TOKEN: "token",
+    });
   });
 });
