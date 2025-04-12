@@ -8,8 +8,6 @@ const promises_1 = tslib_1.__importDefault(require("readline/promises"));
 const config_1 = require("./config");
 /**
  * MCP（Model Context Protocol）クライアントクラス
- *
- * AnthropicのAPIと連携し、MCPサーバーとのインターフェースを提供します
  */
 class MCPClient {
     anthropic;
@@ -131,6 +129,9 @@ class MCPClient {
             }
         }
     }
+    /**
+     * MCPClientのクリーンアップ処理
+     */
     async cleanUp() {
         await this.mcp.close();
     }
