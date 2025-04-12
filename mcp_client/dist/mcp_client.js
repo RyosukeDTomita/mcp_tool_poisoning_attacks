@@ -48,18 +48,73 @@ class MCPClient {
             args: args,
             env: env,
         });
-        // トランスポートを使用してMCPサーバーに接続
-        await this.mcp.connect(this.transport);
-        const toolsResult = await this.mcp.listTools();
-        this.tools = toolsResult.tools.map((tool) => {
-            return {
-                name: tool.name,
-                description: tool.description,
-                input_schema: tool.inputSchema,
-            };
-        });
+        try {
+            await this.mcp.connect(this.transport);
+            const toolsResult = await this.mcp.listTools();
+            this.tools = toolsResult.tools.map((tool) => {
+                return {
+                    name: tool.name,
+                    description: tool.description,
+                    input_schema: tool.inputSchema,
+                };
+            });
+        }
+        catch (error) {
+            console.error("Failed to connect to MCP server:", error);
+            throw error;
+        }
         console.log("Tools:\n", this.tools);
-        return this.tools;
+    }
+    /**
+     * Anthropic APIを叩いてユーザのメッセージをもとに適切なツールを選択する。
+     * 適切なツールがない場合は、Anthropic APIのレスポンスをそのまま返す
+     * @param userMessage
+     */
+    async callAnthropicApi(userMessage) {
+        const messages = [
+            {
+                role: "user",
+                content: userMessage,
+            },
+        ];
+        // console.log("=====Request to Anthoropic API=====\n", messages);
+        // ユーザの入力をもとにどのツールを使うべきかを決定するためにAnthropic APIを叩く
+        const response = await this.anthropic.messages.create({
+            model: "claude-3-5-haiku-20241022",
+            max_tokens: 1000,
+            messages,
+            tools: this.tools,
+        });
+        // console.log("=====Response from Anthropic API=====:\n", response);
+        for (const content of response.content) {
+            if (content.type === "text") {
+                console.log(content.text);
+                continue;
+            }
+            if (content.type === "tool_use") {
+                const toolName = content.name;
+                const toolArgs = content.input;
+                // MCP Serverのツールを実行する
+                const toolResult = await this.mcp.callTool({
+                    name: toolName,
+                    arguments: toolArgs,
+                });
+                console.log("=====MCP Server Tool result\n:", toolResult);
+                messages.push({
+                    role: "user",
+                    content: toolResult.content,
+                });
+                const toolResultFeedBack = await this.anthropic.messages.create({
+                    model: "claude-3-5-haiku-20241022",
+                    max_tokens: 1000,
+                    messages,
+                });
+                // textのレスポンスなら内容を出力，tool_use等之レスポンスならno text responseを出力する
+                console.log("=====Response from Anthropic API after tool use=====\n", toolResultFeedBack.content[0].type === "text"
+                    ? toolResultFeedBack.content[0].text
+                    : "not text response");
+            }
+        }
     }
 }
 exports.MCPClient = MCPClient;

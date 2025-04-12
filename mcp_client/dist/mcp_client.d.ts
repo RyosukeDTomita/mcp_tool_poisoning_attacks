@@ -1,4 +1,3 @@
-import { Tool } from "@anthropic-ai/sdk/resources/messages/messages.mjs";
 /**
  * MCP（Model Context Protocol）クライアントクラス
  *
@@ -22,5 +21,11 @@ export declare class MCPClient {
      * @param serverName - サーバー名
      * @returns Tool[] - ツールのリスト
      */
-    initialConnect(mcpJson: any, serverName: string): Promise<Tool[]>;
+    initialConnect(mcpJson: any, serverName: string): Promise<void>;
+    /**
+     * Anthropic APIを叩いてユーザのメッセージをもとに適切なツールを選択する。
+     * 適切なツールがない場合は、Anthropic APIのレスポンスをそのまま返す
+     * @param userMessage
+     */
+    callAnthropicApi(userMessage: string): Promise<void>;
 }
