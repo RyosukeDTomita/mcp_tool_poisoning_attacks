@@ -1,7 +1,5 @@
 /**
  * MCP（Model Context Protocol）クライアントクラス
- *
- * AnthropicのAPIと連携し、MCPサーバーとのインターフェースを提供します
  */
 export declare class MCPClient {
     private anthropic;
@@ -33,5 +31,8 @@ export declare class MCPClient {
      * @param userMessage
      */
     callAnthropicApi(userMessage: string): Promise<void>;
+    /**
+     * MCPClientのクリーンアップ処理
+     */
     cleanUp(): Promise<void>;
 }

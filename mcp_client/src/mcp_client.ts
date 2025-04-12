@@ -10,8 +10,6 @@ import { getMcpParams } from "./config";
 
 /**
  * MCP（Model Context Protocol）クライアントクラス
- *
- * AnthropicのAPIと連携し、MCPサーバーとのインターフェースを提供します
  */
 export class MCPClient {
   private anthropic: Anthropic;
@@ -146,6 +144,9 @@ export class MCPClient {
       }
     }
   }
+  /**
+   * MCPClientのクリーンアップ処理
+   */
   async cleanUp() {
     await this.mcp.close();
   }
