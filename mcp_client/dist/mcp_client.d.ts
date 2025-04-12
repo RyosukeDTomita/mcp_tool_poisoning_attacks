@@ -23,9 +23,15 @@ export declare class MCPClient {
      */
     initialConnect(mcpJson: any, serverName: string): Promise<void>;
     /**
+     * ユーザからのメッセージを取得する
+     * @returns ユーザのメッセージ
+     */
+    getUserMessage(): Promise<string>;
+    /**
      * Anthropic APIを叩いてユーザのメッセージをもとに適切なツールを選択する。
      * 適切なツールがない場合は、Anthropic APIのレスポンスをそのまま返す
      * @param userMessage
      */
     callAnthropicApi(userMessage: string): Promise<void>;
+    cleanUp(): Promise<void>;
 }

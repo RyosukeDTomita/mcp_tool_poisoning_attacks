@@ -74,6 +74,20 @@ export class MCPClient {
   }
 
   /**
+   * ユーザからのメッセージを取得する
+   * @returns ユーザのメッセージ
+   */
+  async getUserMessage(): Promise<string> {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    const userMessage = await rl.question("Enter your message: ");
+    rl.close();
+    return userMessage;
+  }
+
+  /**
    * Anthropic APIを叩いてユーザのメッセージをもとに適切なツールを選択する。
    * 適切なツールがない場合は、Anthropic APIのレスポンスをそのまま返す
    * @param userMessage
@@ -131,5 +145,8 @@ export class MCPClient {
         );
       }
     }
+  }
+  async cleanUp() {
+    await this.mcp.close();
   }
 }

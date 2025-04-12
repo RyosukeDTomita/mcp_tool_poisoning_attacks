@@ -9,13 +9,13 @@ async function main() {
   const serverName = serverNames[0]; // TODO: 一旦1つのサーバのみで動作するようにする
 
   const mcpClient = new MCPClient(apiKey);
-  await mcpClient.initialConnect(mcpJson, serverName);
-  await mcpClient.callAnthropicApi(
-    "RyosukeDTomita/memoにhogeというissueを作成して",
-  );
-  // ユーザからの入力をを受け取る
-  // ユーザからのメッセージ + toolの情報を含んだリクエストを作成し，Anthropic APIを叩く
-  // レスポンスから使用可能なツールを選択し，ツールを使用する。使用可能なツールがない場合は，Anthropic APIのレスポンスをそのまま返す
+  try {
+    await mcpClient.initialConnect(mcpJson, serverName);
+    const userMessage = await mcpClient.getUserMessage();
+    await mcpClient.callAnthropicApi(userMessage);
+  } finally {
+    await mcpClient.cleanUp();
+  }
 }
 
 main();

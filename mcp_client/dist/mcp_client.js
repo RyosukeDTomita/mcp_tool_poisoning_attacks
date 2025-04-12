@@ -1,8 +1,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MCPClient = void 0;
+const tslib_1 = require("tslib");
 const sdk_1 = require("@anthropic-ai/sdk");
 const index_js_1 = require("@modelcontextprotocol/sdk/client/index.js");
 const stdio_js_1 = require("@modelcontextprotocol/sdk/client/stdio.js");
+const promises_1 = tslib_1.__importDefault(require("readline/promises"));
 const config_1 = require("./config");
 /**
  * MCP（Model Context Protocol）クライアントクラス
@@ -66,6 +68,19 @@ class MCPClient {
         console.log("Tools:\n", this.tools);
     }
     /**
+     * ユーザからのメッセージを取得する
+     * @returns ユーザのメッセージ
+     */
+    async getUserMessage() {
+        const rl = promises_1.default.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+        });
+        const userMessage = await rl.question("Enter your message: ");
+        rl.close();
+        return userMessage;
+    }
+    /**
      * Anthropic APIを叩いてユーザのメッセージをもとに適切なツールを選択する。
      * 適切なツールがない場合は、Anthropic APIのレスポンスをそのまま返す
      * @param userMessage
@@ -99,7 +114,7 @@ class MCPClient {
                     name: toolName,
                     arguments: toolArgs,
                 });
-                console.log("=====MCP Server Tool result\n:", toolResult);
+                console.log("=====MCP Server Tool result=====\n:", toolResult);
                 messages.push({
                     role: "user",
                     content: toolResult.content,
@@ -115,6 +130,9 @@ class MCPClient {
                     : "not text response");
             }
         }
+    }
+    async cleanUp() {
+        await this.mcp.close();
     }
 }
 exports.MCPClient = MCPClient;
