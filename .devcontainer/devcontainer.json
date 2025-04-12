@@ -21,7 +21,9 @@
         "ionutvmi.path-autocomplete",
         "mushan.vscode-paste-image",
         "streetsidesoftware.code-spell-checker",
-        "denoland.vscode-deno",
+        "VisualStudioExptTeam.vscodeintellicode",
+        "YoavBls.pretty-ts-errors",
+        // "ms-vscode.vscode-typescript-next"
       ]
     }
   }

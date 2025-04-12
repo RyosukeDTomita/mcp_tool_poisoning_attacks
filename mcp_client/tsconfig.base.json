@@ -11,7 +11,7 @@
     "moduleResolution": "NodeNext",
     "newLine": "lf", // 改行コードをLinuxスタイルにする
     "noImplicitAny": true, // 暗黙のany型を禁止
-    "noUnusedLocals": true, // 未使用のローカル変数をエラーにする
+    "noUnusedLocals": false, // 未使用のローカル変数をエラーにする
     "noUnusedParameters": false, // 未使用の関数引数は許容する
     "pretty": true, // コンパイラの出力を見やすく整形して表示
     "sourceMap": true, // ソースマップを生成する

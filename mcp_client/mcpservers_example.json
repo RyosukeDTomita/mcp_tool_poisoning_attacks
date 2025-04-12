@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "/usr/local/bin/npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "token",
+        "PATH": "/usr/local/bin:/usr/bin:/bin"
+      }
+    },
+    "git": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/<path to mcp-servers>/mcp-servers/src/git",
+        "run",
+        "mcp-server-git"
+      ]
+    }
+  }
+}
