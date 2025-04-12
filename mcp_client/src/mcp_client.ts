@@ -6,6 +6,7 @@ import {
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import readline from "readline/promises";
+import { getMcpParams } from "./config";
 
 /**
  * MCP（Model Context Protocol）クライアントクラス
@@ -15,8 +16,8 @@ import readline from "readline/promises";
 export class MCPClient {
   private anthropic: Anthropic;
   private mcp: Client;
-
-  private toolList: Tool[] = [];
+  private transport!: StdioClientTransport; // definite assignment assertion
+  private tools: Tool[] = [];
 
   /**
    * MCPClientのコンストラクタ
@@ -29,16 +30,47 @@ export class MCPClient {
       throw new Error("ANTHROPIC_API_KEY is required");
     }
 
-    // this.anthropic = new Anthropic({
-    //   apiKey: ANTHROPIC_API_KEY,
-    // });
-    // this.mcp = new Client({ name: "mcp-client", version: "0.0.1" });
+    this.anthropic = new Anthropic({
+      apiKey: ANTHROPIC_API_KEY,
+    });
+    this.mcp = new Client({ name: "mcp-client", version: "0.0.1" });
   }
 
   /**
-   * MCPサーバーからツールリストを取得する
-   * @param runServerCommand - MCP サーバ起動コマンド
+   * MCPサーバーに接続し，ツールリストを取得する
+   * @param mcpJson - MCPサーバー設定ファイルをパースしたJSON
+   * @param serverName - サーバー名
    * @returns Tool[] - ツールのリスト
    */
-  // function getTools(runServerCommand: string): Tool[] {
+  async initialConnect(mcpJson: any, serverName: string) {
+    const command = getMcpParams(mcpJson, serverName, "command").command;
+    if (!command) {
+      throw new Error(`Command for server ${serverName} is not defined`);
+    }
+    const args = getMcpParams(mcpJson, serverName, "args").args || [];
+    const env = getMcpParams(mcpJson, serverName, "env").env || {};
+
+    // MCPサーバーに接続する
+    this.transport = new StdioClientTransport({
+      command: command,
+      args: args,
+      env: env,
+    });
+    try {
+      await this.mcp.connect(this.transport);
+      const toolsResult = await this.mcp.listTools();
+      this.tools = toolsResult.tools.map((tool) => {
+        return {
+          name: tool.name,
+          description: tool.description,
+          input_schema: tool.inputSchema,
+        };
+      });
+    } catch (error) {
+      console.error("Failed to connect to MCP server:", error);
+      throw error;
+    }
+    console.log("Tools:\n", this.tools);
+  }
+
 }

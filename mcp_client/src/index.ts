@@ -9,7 +9,7 @@ async function main() {
   const serverName = serverNames[0]; // TODO: 一旦1つのサーバのみで動作するようにする
 
   const mcpClient = new MCPClient(apiKey);
-  // MCP Serverに接続し，利用可能なツールの一覧を取得する
+  await mcpClient.initialConnect(mcpJson, serverName);
   // ユーザからの入力をを受け取る
   // ユーザからのメッセージ + toolの情報を含んだリクエストを作成し，Anthropic APIを叩く
   // レスポンスから使用可能なツールを選択し，ツールを使用する。使用可能なツールがない場合は，Anthropic APIのレスポンスをそのまま返す

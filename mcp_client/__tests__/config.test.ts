@@ -49,25 +49,33 @@ describe("getServerNames", () => {
   });
 });
 
-describe("getMCPCommand", () => {
+describe("getMcpParams", () => {
   test("指定したサーバー名に対応するcommandを返すこと", () => {
     const command = getMcpParams(mockMcpJson, "github", "command");
     expect(command.command).toBe("npx");
   });
-});
 
-describe("getMCPArgs", () => {
   test("指定したサーバー名に対応するargsを返すこと", () => {
     const command = getMcpParams(mockMcpJson, "github", "args");
     expect(command.args).toEqual(["-y", "@modelcontextprotocol/server-github"]);
   });
-});
 
-describe("getMCPEnv", () => {
   test("指定したサーバー名に対応するenvを返すこと", () => {
     const command = getMcpParams(mockMcpJson, "github", "env");
     expect(command.env).toEqual({
       GITHUB_PERSONAL_ACCESS_TOKEN: "token",
     });
+  });
+
+  test("存在しないサーバー名を指定した場合にエラーを投げること", () => {
+    expect(() => getMcpParams(mockMcpJson, "nonexistent", "command")).toThrow(
+      "Server nonexistent not found in MCP JSON",
+    );
+  });
+
+  test("存在しないパラメータタイプを指定した場合にエラーを投げること", () => {
+    expect(() => getMcpParams(mockMcpJson, "github", "invalid")).toThrow(
+      "Unknown parameter type: invalid",
+    );
   });
 });

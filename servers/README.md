@@ -1,22 +1,10 @@
+# MCP Server
+
 MCP Serverのリソースを置くディレクトリ。
 
 e.g. [modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers)
 
-以下の様に，npx等を使う場合にはリソースは不要
+> [!NOTE]
+> npxのパスがnode.js経由で呼び出すとうまく通らなかったのでフルパスで指定している
 
-```json
-{
-  "mcpServers": {
-    "github": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "<YOUR_TOKEN>"
-      }
-    }
-  }
-}
-```
+[mcpservers.json](../mcp_client/mcpservers_example.json)の設定例を参照。

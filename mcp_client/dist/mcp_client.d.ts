@@ -1,3 +1,4 @@
+import { Tool } from "@anthropic-ai/sdk/resources/messages/messages.mjs";
 /**
  * MCP（Model Context Protocol）クライアントクラス
  *
@@ -6,7 +7,8 @@
 export declare class MCPClient {
     private anthropic;
     private mcp;
-    private toolList;
+    private transport;
+    private tools;
     /**
      * MCPClientのコンストラクタ
      *
@@ -14,4 +16,11 @@ export declare class MCPClient {
      * @throws Error - ANTHROPIC_API_KEYが指定されていない場合
      */
     constructor(ANTHROPIC_API_KEY: string);
+    /**
+     * MCPサーバーに接続し，ツールリストを取得する
+     * @param mcpJson - MCPサーバー設定ファイルをパースしたJSON
+     * @param serverName - サーバー名
+     * @returns Tool[] - ツールのリスト
+     */
+    initialConnect(mcpJson: any, serverName: string): Promise<Tool[]>;
 }
