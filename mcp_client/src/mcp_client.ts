@@ -35,6 +35,14 @@ export class MCPClient {
   }
 
   /**
+   * toolsプロパティのゲッター
+   * @returns Tool[] - ツールのリスト
+   */
+  getTools(): Tool[] {
+    return this.tools;
+  }
+
+  /**
    * MCPサーバーに接続し，ツールリストを取得する
    * @param mcpJson - MCPサーバー設定ファイルをパースしたJSON
    * @param serverName - サーバー名
