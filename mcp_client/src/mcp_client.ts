@@ -15,7 +15,6 @@ export class MCPClient {
   private anthropic: Anthropic;
   private mcp: Client;
   private transport!: StdioClientTransport; // definite assignment assertion
-  private tools: Tool[] = [];
 
   /**
    * MCPClientのコンストラクタ
@@ -35,20 +34,12 @@ export class MCPClient {
   }
 
   /**
-   * toolsプロパティのゲッター
-   * @returns Tool[] - ツールのリスト
-   */
-  getTools(): Tool[] {
-    return this.tools;
-  }
-
-  /**
    * MCPサーバーに接続し，ツールリストを取得する
    * @param mcpJson - MCPサーバー設定ファイルをパースしたJSON
    * @param serverName - サーバー名
    * @returns Tool[] - ツールのリスト
    */
-  async initialConnect(mcpJson: any, serverName: string) {
+  async initialConnect(mcpJson: any, serverName: string): Promise<Tool[]> {
     const command = getMcpParams(mcpJson, serverName, "command").command;
     if (!command) {
       throw new Error(`Command for server ${serverName} is not defined`);
@@ -65,18 +56,19 @@ export class MCPClient {
     try {
       await this.mcp.connect(this.transport);
       const toolsResult = await this.mcp.listTools();
-      this.tools = toolsResult.tools.map((tool) => {
+      const tools = toolsResult.tools.map((tool) => {
         return {
           name: tool.name,
           description: tool.description,
           input_schema: tool.inputSchema,
         };
       });
+      console.log("Tools:\n", tools);
+      return tools;
     } catch (error) {
       console.error("Failed to connect to MCP server:", error);
       throw error;
     }
-    console.log("Tools:\n", this.tools);
   }
 
   /**
@@ -96,9 +88,10 @@ export class MCPClient {
   /**
    * Anthropic APIを叩いてユーザのメッセージをもとに適切なツールを選択する。
    * 適切なツールがない場合は、Anthropic APIのレスポンスをそのまま返す
-   * @param userMessage
+   * @param userMessage - ユーザのメッセージ
+   * @param tools - 使用可能なツールのリスト
    */
-  async callAnthropicApi(userMessage: string) {
+  async callAnthropicApi(userMessage: string, tools: Tool[]) {
     const messages: MessageParam[] = [
       {
         role: "user",
@@ -112,7 +105,7 @@ export class MCPClient {
       model: "claude-3-5-haiku-20241022",
       max_tokens: 1000,
       messages,
-      tools: this.tools,
+      tools: tools,
     });
     // console.log("=====Response from Anthropic API=====:\n", response);
 

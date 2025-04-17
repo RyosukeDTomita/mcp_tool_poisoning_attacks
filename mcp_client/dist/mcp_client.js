@@ -13,7 +13,6 @@ class MCPClient {
     anthropic;
     mcp;
     transport; // definite assignment assertion
-    tools = [];
     /**
      * MCPClientのコンストラクタ
      *
@@ -51,19 +50,20 @@ class MCPClient {
         try {
             await this.mcp.connect(this.transport);
             const toolsResult = await this.mcp.listTools();
-            this.tools = toolsResult.tools.map((tool) => {
+            const tools = toolsResult.tools.map((tool) => {
                 return {
                     name: tool.name,
                     description: tool.description,
                     input_schema: tool.inputSchema,
                 };
             });
+            console.log("Tools:\n", tools);
+            return tools;
         }
         catch (error) {
             console.error("Failed to connect to MCP server:", error);
             throw error;
         }
-        console.log("Tools:\n", this.tools);
     }
     /**
      * ユーザからのメッセージを取得する
@@ -81,9 +81,10 @@ class MCPClient {
     /**
      * Anthropic APIを叩いてユーザのメッセージをもとに適切なツールを選択する。
      * 適切なツールがない場合は、Anthropic APIのレスポンスをそのまま返す
-     * @param userMessage
+     * @param userMessage - ユーザのメッセージ
+     * @param tools - 使用可能なツールのリスト
      */
-    async callAnthropicApi(userMessage) {
+    async callAnthropicApi(userMessage, tools) {
         const messages = [
             {
                 role: "user",
@@ -96,7 +97,7 @@ class MCPClient {
             model: "claude-3-5-haiku-20241022",
             max_tokens: 1000,
             messages,
-            tools: this.tools,
+            tools: tools,
         });
         // console.log("=====Response from Anthropic API=====:\n", response);
         for (const content of response.content) {

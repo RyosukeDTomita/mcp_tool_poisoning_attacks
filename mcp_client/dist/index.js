@@ -9,9 +9,9 @@ async function main() {
     const serverName = serverNames[0]; // TODO: 一旦1つのサーバのみで動作するようにする
     const mcpClient = new mcp_client_1.MCPClient(apiKey);
     try {
-        await mcpClient.initialConnect(mcpJson, serverName);
+        const tools = await mcpClient.initialConnect(mcpJson, serverName);
         const userMessage = await mcpClient.getUserMessage();
-        await mcpClient.callAnthropicApi(userMessage);
+        await mcpClient.callAnthropicApi(userMessage, tools);
     }
     finally {
         await mcpClient.cleanUp();

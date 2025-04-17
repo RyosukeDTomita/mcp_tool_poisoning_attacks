@@ -11,7 +11,7 @@ const mockMcpJson = {
       args: ["-y", "@modelcontextprotocol/server-github"],
       env: {
         GITHUB_PERSONAL_ACCESS_TOKEN: "token",
-        PATH: "/usr/local/bin:/usr/bin:/bin"
+        PATH: "/usr/local/bin:/usr/bin:/bin",
       },
     },
     git: {
@@ -37,7 +37,7 @@ describe("initialConnect", () => {
   test("MCPサーバーに接続し，ツールリストを取得する", async () => {
     const apiKey = "test_api_key";
     const mcpClient = new MCPClient(apiKey);
-    await mcpClient.initialConnect(mockMcpJson, "github");
-    expect(mcpClient.getTools()).toBeDefined();
+    const tools = await mcpClient.initialConnect(mockMcpJson, "github");
+    expect(tools).not.toEqual([]);
   });
 });
