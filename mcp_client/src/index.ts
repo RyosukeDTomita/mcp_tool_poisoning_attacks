@@ -10,9 +10,9 @@ async function main() {
 
   const mcpClient = new MCPClient(apiKey);
   try {
-    await mcpClient.initialConnect(mcpJson, serverName);
+    const tools = await mcpClient.initialConnect(mcpJson, serverName);
     const userMessage = await mcpClient.getUserMessage();
-    await mcpClient.callAnthropicApi(userMessage);
+    await mcpClient.callAnthropicApi(userMessage, tools);
   } finally {
     await mcpClient.cleanUp();
   }
