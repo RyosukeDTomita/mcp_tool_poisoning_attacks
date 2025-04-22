@@ -91,7 +91,7 @@ class MCPClient {
                 content: userMessage,
             },
         ];
-        // console.log("=====Request to Anthoropic API=====\n", messages);
+        console.log("=====Request to Anthoropic API=====\n", messages);
         // ユーザの入力をもとにどのツールを使うべきかを決定するためにAnthropic APIを叩く
         const response = await this.anthropic.messages.create({
             model: "claude-3-5-haiku-20241022",
@@ -99,7 +99,7 @@ class MCPClient {
             messages,
             tools: tools,
         });
-        // console.log("=====Response from Anthropic API=====:\n", response);
+        console.log("=====Response from Anthropic API=====:\n", response);
         for (const content of response.content) {
             if (content.type === "text") {
                 console.log(content.text);
