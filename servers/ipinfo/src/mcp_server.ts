@@ -71,7 +71,7 @@ server.setRequestHandler(
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     console.log("=====tool name=====\n", request.params.name);
-    if (!request.params.arguments ) {
+    if (!request.params.arguments) {
       throw new Error("arguments is required");
     }
 

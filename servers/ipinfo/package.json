@@ -6,9 +6,6 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "bin": {
-    "ipinfo": "./dist/index.js"
-  },
   "scripts": {
     "bundle": "yarn run format && yarn run package",
     "format": "npx prettier --write .",

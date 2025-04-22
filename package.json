@@ -1,0 +1,13 @@
+{
+  "name": "ipinfo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "UNLICENSED",
+  "bin": { "ipinfo": "servers/ipinfo/dist/index.js" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.10.1",
+    "node-fetch": "2",
+    "zod": "^3.24.2",
+    "zod-to-json-schema": "^3.24.5"
+  }
+}

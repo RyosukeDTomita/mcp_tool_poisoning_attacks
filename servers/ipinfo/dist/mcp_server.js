@@ -39,6 +39,9 @@ exports.server.setRequestHandler(types_js_1.ListToolsRequestSchema, async () => 
 exports.server.setRequestHandler(types_js_1.CallToolRequestSchema, async (request) => {
     try {
         console.log("=====tool name=====\n", request.params.name);
+        if (!request.params.arguments) {
+            throw new Error("arguments is required");
+        }
         switch (request.params.name) {
             case "ipinfo": {
                 const myIPInfo = await (0, ipinfo_1.getMyIpInfo)();
