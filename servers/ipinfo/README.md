@@ -19,7 +19,8 @@ MCP Serverをとりあえず作ってみた。
 
 ## ENVIRONMENT
 
-- Node.js
+- node.js v22
+- [mcp sdk](https://github.com/modelcontextprotocol/typescript-sdk)
 
 ---
 

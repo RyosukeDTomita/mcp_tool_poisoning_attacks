@@ -1,5 +1,12 @@
 {
   "mcpServers": {
+    "ipinfo": {
+      "command": "/usr/local/bin/npx",
+      "args": ["-y", "github:RyosukeDTomita/mcp_tool_poisoning_attacks#main/servers/ipinfo"],
+      "env": {
+        "PATH": "/usr/local/bin:/usr/bin:/bin"
+      }
+    },
     "github": {
       "command": "/usr/local/bin/npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
