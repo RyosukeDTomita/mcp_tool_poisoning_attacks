@@ -98,7 +98,7 @@ export class MCPClient {
         content: userMessage,
       },
     ];
-    console.log("=====Request to Anthoropic API=====\n", messages);
+    console.log("=====Request to Anthropic API=====\n", messages);
 
     // ユーザの入力をもとにどのツールを使うべきかを決定するためにAnthropic APIを叩く
     const response = await this.anthropic.messages.create({

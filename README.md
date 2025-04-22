@@ -14,23 +14,19 @@
 
 ## ABOUT
 
+MCP Client and MCP Server
+
 ---
 
 ## ENVIRONMENT
 
 - node.js v22
 - [mcp sdk](https://github.com/modelcontextprotocol/typescript-sdk)
+- `claude-3-5-haiku-20241022`
 
-### Available Models
-
-[List Models](https://docs.anthropic.com/en/api/models-list)
-
-```shell
-curl https://api.anthropic.com/v1/models \
-    --header "x-api-key: $ANTHROPIC_API_KEY" \
-    --header "anthropic-version: 2023-06-01"
-{"data":[{"type":"model","id":"claude-3-7-sonnet-20250219","display_name":"Claude 3.7 Sonnet","created_at":"2025-02-24T00:00:00Z"},{"type":"model","id":"claude-3-5-sonnet-20241022","display_name":"Claude 3.5 Sonnet (New)","created_at":"2024-10-22T00:00:00Z"},{"type":"model","id":"claude-3-5-haiku-20241022","display_name":"Claude 3.5 Haiku","created_at":"2024-10-22T00:00:00Z"},{"type":"model","id":"claude-3-5-sonnet-20240620","display_name":"Claude 3.5 Sonnet (Old)","created_at":"2024-06-20T00:00:00Z"},{"type":"model","id":"claude-3-haiku-20240307","display_name":"Claude 3 Haiku","created_at":"2024-03-07T00:00:00Z"},{"type":"model","id":"claude-3-opus-20240229","display_name":"Claude 3 Opus","created_at":"2024-02-29T00:00:00Z"}],"has_more":false,"first_id":"claude-3-7-sonnet-20250219","last_id":"claude-3-opus-20240229"}
-```
+> [!NOTE]
+> [./servers/ipinfo/](./servers/ipinfo/)は現在`npx`を使ってMCP Clientから使用する形を取っている。
+> npxを使ってGitHubのリポジトリからinstallするには`package.json`をリポジトリトップに配置する必要があるため，npx使用のための[./package.json](./package.json)をリポジトリトップに配置している。
 
 ---
 
@@ -116,132 +112,93 @@ example of `mcp_client/mcpservers.json`
 }
 ```
 
+> [!NOTE]
+> 現状は`mcpservers.json`の中にある一番上のサーバを使用するようになっている。
+
 ```shell
-docker compose run mcp_client
-GitHub MCP Server running on stdio
+docker compose run -it mcp_client
 Tools:
  [
   {
-    name: 'create_or_update_file',
-    description: 'Create or update a single file in a GitHub repository',
+    name: 'ipinfo',
+    description: 'Get My IP information',
     input_schema: {
       type: 'object',
-      properties: [Object],
-      required: [Array],
+      properties: {},
       additionalProperties: false,
       '$schema': 'http://json-schema.org/draft-07/schema#'
     }
   },
   {
-    name: 'create_issue',
-    description: 'Create a new issue in a GitHub repository',
+    name: 'ipinfo_target_ipjson',
+    description: 'Get Target IP information from user request parameter',
     input_schema: {
       type: 'object',
       properties: [Object],
-      required: [Array],
       additionalProperties: false,
       '$schema': 'http://json-schema.org/draft-07/schema#'
     }
-  },
+  }
 ]
-Enter your message: RyosukeDTomita/memoにhogeというタイトルのissueを立てて
-I'll help you create an issue titled "hoge" in the RyosukeDTomita/memo repository. I'll use the `create_issue` function to do this.
-[DEBUG] Attempting to create issue in RyosukeDTomita/memo
-[DEBUG] Issue options: {
-  "title": "hoge"
+Enter your message: 8.8.8.8の情報を教えて
+=====Request to Anthoropic API=====
+ [ { role: 'user', content: '8.8.8.8の情報を教えて' } ]
+=====Response from Anthropic API=====:
+ {
+  id: 'msg_012ZGLAfhWKmgDroHELiq6F6',
+  type: 'message',
+  role: 'assistant',
+  model: 'claude-3-5-haiku-20241022',
+  content: [
+    {
+      type: 'text',
+      text: '8.8.8.8の情報を調べるために、ipinfo_target_ipjsonツールを使用します。'
+    },
+    {
+      type: 'tool_use',
+      id: 'toolu_01EecHroNi48aFhzTaW5V5NW',
+      name: 'ipinfo_target_ipjson',
+      input: [Object]
+    }
+  ],
+  stop_reason: 'tool_use',
+  stop_sequence: null,
+  usage: {
+    input_tokens: 432,
+    cache_creation_input_tokens: 0,
+    cache_read_input_tokens: 0,
+    output_tokens: 97
+  }
 }
-[DEBUG] Issue created successfully
+8.8.8.8の情報を調べるために、ipinfo_target_ipjsonツールを使用します。
 =====MCP Server Tool result=====
 : {
   content: [
     {
       type: 'text',
-      text: '{\n' +
-        '  "url": "https://api.github.com/repos/RyosukeDTomita/memo/issues/89",\n' +
-        '  "repository_url": "https://api.github.com/repos/RyosukeDTomita/memo",\n' +
-        '  "labels_url": "https://api.github.com/repos/RyosukeDTomita/memo/issues/89/labels{/name}",\n' +
-        '  "comments_url": "https://api.github.com/repos/RyosukeDTomita/memo/issues/89/comments",\n' +
-        '  "events_url": "https://api.github.com/repos/RyosukeDTomita/memo/issues/89/events",\n' +
-        '  "html_url": "https://github.com/RyosukeDTomita/memo/issues/89",\n' +
-        '  "id": 2990421567,\n' +
-        '  "node_id": "I_kwDOI80-fc6yPjY_",\n' +
-        '  "number": 89,\n' +
-        '  "title": "hoge",\n' +
-        '  "user": {\n' +
-        '    "login": "RyosukeDTomita",\n' +
-        '    "id": 50137312,\n' +
-        '    "node_id": "MDQ6VXNlcjUwMTM3MzEy",\n' +
-        '    "avatar_url": "https://avatars.githubusercontent.com/u/50137312?v=4",\n' +
-        '    "gravatar_id": "",\n' +
-        '    "url": "https://api.github.com/users/RyosukeDTomita",\n' +
-        '    "html_url": "https://github.com/RyosukeDTomita",\n' +
-        '    "followers_url": "https://api.github.com/users/RyosukeDTomita/followers",\n' +
-        '    "following_url": "https://api.github.com/users/RyosukeDTomita/following{/other_user}",\n' +
-        '    "gists_url": "https://api.github.com/users/RyosukeDTomita/gists{/gist_id}",\n' +
-        '    "starred_url": "https://api.github.com/users/RyosukeDTomita/starred{/owner}{/repo}",\n' +
-        '    "subscriptions_url": "https://api.github.com/users/RyosukeDTomita/subscriptions",\n' +
-        '    "organizations_url": "https://api.github.com/users/RyosukeDTomita/orgs",\n' +
-        '    "repos_url": "https://api.github.com/users/RyosukeDTomita/repos",\n' +
-        '    "events_url": "https://api.github.com/users/RyosukeDTomita/events{/privacy}",\n' +
-        '    "received_events_url": "https://api.github.com/users/RyosukeDTomita/received_events",\n' +
-        '    "type": "User",\n' +
-        '    "user_view_type": "public",\n' +
-        '    "site_admin": false\n' +
-        '  },\n' +
-        '  "labels": [],\n' +
-        '  "state": "open",\n' +
-        '  "locked": false,\n' +
-        '  "assignee": null,\n' +
-        '  "assignees": [],\n' +
-        '  "milestone": null,\n' +
-        '  "comments": 0,\n' +
-        '  "created_at": "2025-04-12T11:31:41Z",\n' +
-        '  "updated_at": "2025-04-12T11:31:41Z",\n' +
-        '  "closed_at": null,\n' +
-        '  "author_association": "OWNER",\n' +
-        '  "sub_issues_summary": {\n' +
-        '    "total": 0,\n' +
-        '    "completed": 0,\n' +
-        '    "percent_completed": 0\n' +
-        '  },\n' +
-        '  "active_lock_reason": null,\n' +
-        '  "body": null,\n' +
-        '  "closed_by": null,\n' +
-        '  "reactions": {\n' +
-        '    "url": "https://api.github.com/repos/RyosukeDTomita/memo/issues/89/reactions",\n' +
-        '    "total_count": 0,\n' +
-        '    "+1": 0,\n' +
-        '    "-1": 0,\n' +
-        '    "laugh": 0,\n' +
-        '    "hooray": 0,\n' +
-        '    "confused": 0,\n' +
-        '    "heart": 0,\n' +
-        '    "rocket": 0,\n' +
-        '    "eyes": 0\n' +
-        '  },\n' +
-        '  "timeline_url": "https://api.github.com/repos/RyosukeDTomita/memo/issues/89/timeline",\n' +
-        '  "performed_via_github_app": null,\n' +
-        '  "state_reason": null\n' +
-        '}'
+      text: '{"ip":"8.8.8.8","hostname":"dns.google","city":"Mountain View","region":"California","country":"US","loc":"38.0088,-122.1175","org":"AS15169 Google LLC","postal":"94043","timezone":"America/Los_Angeles","readme":"https://ipinfo.io/missingauth","anycast":true}'
     }
   ]
 }
 =====Response from Anthropic API after tool use=====
- 上記のレスポンスは、GitHub API を使用して RyosukeDTomita/memo リポジトリに "hoge" というタイトルの Issue (Issue #89) を作成した結果を示しています。
+ この情報は、IPアドレス8.8.8.8の詳細を示しています。主な特徴は以下の通りです：
 
-主な情報は以下の通りです：
+1. IP: 8.8.8.8
+2. ホスト名: dns.google
+3. 所在地:
+   - 都市: Mountain View
+   - 地域: カリフォルニア
+   - 国: アメリカ合衆国（US）
+4. 地理的座標: 北緯38.0088、西経-122.1175
+5. 組織: AS15169 Google LLC
+6. 郵便番号: 94043
+7. タイムゾーン: アメリカ/ロサンゼルス
+8. エニーキャスト: はい（true）
 
-- Issue 番号: 89
-- タイトル: "hoge"
-- 作成者: RyosukeDTomita
-- 状態: open
-- 作成日時: 2025-04-12T11:31:41Z
-
-特に注目すべき点：
-- ラベルは設定されていない
-- 担当者は割り当てられていない
-- コメントはまだない
-- 本文（body）は null
-
-このレスポンスは、GitHub API を通じて Issue が正常に作成されたことを示しています。
+この8.8.8.8は、Googleが提供する公開DNSサーバーの1つで、一般的に多くのユーザーが利用している信頼性の高いDNSサービスです。
 ```
+
+## References
+
+- [My MCPClient Readme](./mcp_client/README.md)
+- [My MCPServer(ipinfo) Readme](./servers/ipinfo/README.md)
