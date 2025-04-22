@@ -1,7 +1,8 @@
 // ignore the IDE warning about type checking
-import { describe, test, expect } from "@jest/globals";
+import { describe, test, expect, jest } from "@jest/globals";
 
 import { MCPClient } from "../src/mcp_client";
+import readline from "readline/promises";
 
 // モック用のMCP JSON
 const mockMcpJson = {
@@ -41,3 +42,24 @@ describe("initialConnect", () => {
     expect(tools).not.toEqual([]);
   });
 });
+
+describe("getUserMessage", () => {
+  test("ユーザからの入力を正しく取得できること", async () => {
+    // mock
+    const mockUserInput =
+      "RyosukeDTomita/mcp_tool_poisoning_attacksにbugというIssueを作成してください。";
+    jest
+      .spyOn(MCPClient.prototype, "getUserMessage")
+      .mockImplementation(async () => mockUserInput);
+
+    const apiKey = "test_api_key";
+    const mcpClient = new MCPClient(apiKey);
+    const result = await mcpClient.getUserMessage();
+
+    expect(result).toBe(mockUserInput);
+
+    jest.restoreAllMocks();
+  });
+});
+
+// callAnthropicApi()のテストはAPI代金をケチるために省略。モック化してテストすることにあまり意味を感じない
