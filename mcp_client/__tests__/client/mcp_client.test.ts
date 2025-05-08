@@ -1,7 +1,7 @@
 // ignore the IDE warning about type checking
 import { describe, test, expect, jest } from "@jest/globals";
 
-import { MCPClient } from "../src/mcp_client";
+import { MCPClient } from "../src/client/mcp_client";
 import readline from "readline/promises";
 
 // モック用のMCP JSON

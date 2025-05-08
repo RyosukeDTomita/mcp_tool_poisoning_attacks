@@ -91,22 +91,19 @@ example of `mcp_client/mcpservers.json`
 ```json
 {
   "mcpServers": {
-    "github": {
+    "ipinfo": {
       "command": "/usr/local/bin/npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "args": [
+        "-y",
+        "github:RyosukeDTomita/mcp_tool_poisoning_attacks#main",
+        "ipinfo"
+      ],
       "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "github_pat_hogehoge",
         "PATH": "/usr/local/bin:/usr/bin:/bin"
       }
     },
-    "git": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "/<path to mcp-servers>/mcp-servers/src/git",
-        "run",
-        "mcp-server-git"
-      ]
+    "burp": {
+      "url": "http://localhost:9876/sse"
     }
   }
 }

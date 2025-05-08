@@ -5,8 +5,9 @@ import {
 } from "@anthropic-ai/sdk/resources/messages/messages.mjs";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import readline from "readline/promises";
-import { getMcpParams } from "./config";
+import fs from "fs";
+import path from "path";
+import { getMcpParams } from "./mcp_settings_loader";
 
 /**
  * MCP（Model Context Protocol）クライアントクラス
@@ -69,20 +70,6 @@ export class MCPClient {
       console.error("Failed to connect to MCP server:", error);
       throw error;
     }
-  }
-
-  /**
-   * ユーザからのメッセージを取得する
-   * @returns ユーザのメッセージ
-   */
-  async getUserMessage(): Promise<string> {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-    const userMessage = await rl.question("Enter your message: ");
-    rl.close();
-    return userMessage;
   }
 
   /**

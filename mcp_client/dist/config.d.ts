@@ -30,8 +30,12 @@ export declare function getServerNames(mcpJson: any): string[];
  * @returns {object} 要求されたパラメータを含むオブジェクト
  * @throws {Error} 指定されたサーバーが存在しない場合
  */
-export declare function getMcpParams(mcpJson: any, serverName: string, paramType: string): {
-    command?: string;
-    args?: string[];
-    env?: Record<string, string>;
+export declare function getMcpParams(
+  mcpJson: any,
+  serverName: string,
+  paramType: string,
+): {
+  command?: string;
+  args?: string[];
+  env?: Record<string, string>;
 };
