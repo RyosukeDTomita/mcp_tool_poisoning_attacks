@@ -31,7 +31,7 @@ async function main() {
         // ログを出力
         const logs = mcpClient.getLogs();
         console.log("\n===== Execution Log =====");
-        logs.forEach(log => console.log(log));
+        logs.forEach((log) => console.log(log));
     });
 }
 if (require.main === module) {

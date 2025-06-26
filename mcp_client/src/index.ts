@@ -28,11 +28,11 @@ async function main() {
 
   await MCPClient.session(async (mcpClient: MCPClient) => {
     await mcpClient.execute(apiKey, mcpJsonPath, userMessage, serverName);
-    
+
     // ログを出力
     const logs = mcpClient.getLogs();
     console.log("\n===== Execution Log =====");
-    logs.forEach(log => console.log(log));
+    logs.forEach((log) => console.log(log));
   });
 }
 

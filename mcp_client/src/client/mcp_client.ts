@@ -161,7 +161,10 @@ export class MCPClient {
         content: userMessage,
       },
     ];
-    this.addLog("=====Request to Anthropic API=====\n" + JSON.stringify(messages, null, 2));
+    this.addLog(
+      "=====Request to Anthropic API=====\n" +
+        JSON.stringify(messages, null, 2),
+    );
 
     // ユーザの入力をもとにどのツールを使うべきかを決定するためにAnthropic APIを叩く
     const response = await this.anthropic.messages.create({
@@ -170,7 +173,10 @@ export class MCPClient {
       messages,
       tools: tools,
     });
-    this.addLog("=====Response from Anthropic API=====:\n" + JSON.stringify(response, null, 2));
+    this.addLog(
+      "=====Response from Anthropic API=====:\n" +
+        JSON.stringify(response, null, 2),
+    );
 
     for (const content of response.content) {
       if (content.type === "text") {
@@ -186,7 +192,10 @@ export class MCPClient {
           name: toolName,
           arguments: toolArgs,
         });
-        this.addLog("=====MCP Server Tool result=====\n" + JSON.stringify(toolResult, null, 2));
+        this.addLog(
+          "=====MCP Server Tool result=====\n" +
+            JSON.stringify(toolResult, null, 2),
+        );
 
         messages.push({
           role: "user",
@@ -199,11 +208,15 @@ export class MCPClient {
           messages,
         });
         // textのレスポンスなら内容を出力，tool_use等之レスポンスならno text responseを出力する
+
         this.addLog(
           "=====Response from Anthropic API after tool use=====\n" +
-          (toolResultFeedBack.content[0].type === "text"
-            ? toolResultFeedBack.content[0].text
-            : "not text response")
+            (Array.isArray(toolResultFeedBack.content) &&
+            toolResultFeedBack.content.length > 0
+              ? toolResultFeedBack.content[0].type === "text"
+                ? toolResultFeedBack.content[0].text
+                : "not text response"
+              : "no content in response"),
         );
       }
     }
