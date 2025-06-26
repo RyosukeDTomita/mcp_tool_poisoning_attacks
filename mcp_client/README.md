@@ -44,15 +44,15 @@ curl https://api.anthropic.com/v1/models \
 ### For Dev Container
 
 1. install VSCode, Docker
-2. install VSCode Extensions *Dev ContainerS*
+2. install VSCode Extensions _Dev ContainerS_
 3. On the VSCode, `Ctrl shift p` and run `Dev Containers: Rebuild Containers`
 4. create `.env` and add `ANTHROPIC_API_KEY`
 
-  ```shell
-  cat << EOF > mcp_client/.env
-  ANTHROPIC_API_KEY=your_anthropic_api_key
-  EOF
-  ```
+```shell
+cat << EOF > mcp_client/.env
+ANTHROPIC_API_KEY=your_anthropic_api_key
+EOF
+```
 
 5. create `mcp_client/mcpservers.json`
 
@@ -60,18 +60,18 @@ curl https://api.anthropic.com/v1/models \
 
 1. create `.env` and add `ANTHROPIC_API_KEY`
 
-  ```shell
-  cat << EOF > mcp_client/.env
-  ANTHROPIC_API_KEY=your_anthropic_api_key
-  EOF
-  ```
+```shell
+cat << EOF > mcp_client/.env
+ANTHROPIC_API_KEY=your_anthropic_api_key
+EOF
+```
 
 2. create `mcp_client/mcpservers.json`
 3. build docker image
 
-  ```shell
-  docker compose build
-  ```
+```shell
+docker compose build
+```
 
 ---
 

@@ -2,18 +2,17 @@
   "mcpServers": {
     "ipinfo": {
       "command": "/usr/local/bin/npx",
-      "args": ["-y", "github:RyosukeDTomita/mcp_tool_poisoning_attacks#main", "ipinfo"],
+      "args": [
+        "-y",
+        "github:RyosukeDTomita/mcp_tool_poisoning_attacks#main",
+        "ipinfo"
+      ],
       "env": {
         "PATH": "/usr/local/bin:/usr/bin:/bin"
       }
     },
-    "github": {
-      "command": "/usr/local/bin/npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "token",
-        "PATH": "/usr/local/bin:/usr/bin:/bin"
-      }
+    "burp": {
+      "url": "http://localhost:9876/sse"
     }
   }
 }

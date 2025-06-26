@@ -5,6 +5,8 @@
     "declaration": true, // .d.tsを出力する
     "declarationMap": false, // .d.ts.mapを生成しない
     "esModuleInterop": true, // importを使用できるようにする
+    "experimentalDecorators": true, // デコレータを有効にする
+    "emitDecoratorMetadata": true, // デコレータのメタデータ出力を有効にする
     "forceConsistentCasingInFileNames": true, // ファイル名の大文字小文字の不一致をエラーにする
     "lib": ["ES2022"],
     "module": "NodeNext",
