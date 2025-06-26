@@ -8,12 +8,22 @@ import { glob } from "glob";
 const config = {
   input: glob.sync("src/**/*.ts"),
   output: {
-    esModule: true,
     dir: "dist",
-    format: "es",
+    format: "cjs",
     sourcemap: true,
+    preserveModules: true,
+    preserveModulesRoot: "src",
   },
-  plugins: [typescript(), nodeResolve(), commonjs()],
+  external: [
+    "@anthropic-ai/sdk",
+    "@modelcontextprotocol/sdk/client/index.js",
+    "@modelcontextprotocol/sdk/client/stdio.js",
+    "dotenv",
+    "fs",
+    "path",
+    "readline/promises",
+  ],
+  plugins: [typescript(), nodeResolve({ preferBuiltins: true }), commonjs()],
 };
 
 export default config;

@@ -13,49 +13,125 @@ import { getMcpParams } from "./mcp_settings_loader";
  * MCP（Model Context Protocol）クライアントクラス
  */
 export class MCPClient {
-  private anthropic: Anthropic;
+  private anthropic!: Anthropic; // definite assignment assertion
   private mcp: Client;
   private transport!: StdioClientTransport; // definite assignment assertion
+  private logs: string[] = []; // ログを蓄積する配列
 
   /**
    * MCPClientのコンストラクタ
-   *
-   * @param ANTHROPIC_API_KEY - Anthropic APIの認証キー
-   * @throws Error - ANTHROPIC_API_KEYが指定されていない場合
    */
-  constructor(ANTHROPIC_API_KEY: string) {
-    if (!ANTHROPIC_API_KEY) {
-      throw new Error("ANTHROPIC_API_KEY is required");
-    }
-
-    this.anthropic = new Anthropic({
-      apiKey: ANTHROPIC_API_KEY,
-    });
+  constructor() {
     this.mcp = new Client({ name: "mcp-client", version: "0.0.1" });
   }
 
   /**
-   * MCPサーバーに接続し，ツールリストを取得する
-   * @param mcpJson - MCPサーバー設定ファイルをパースしたJSON
+   * ログを取得する
+   * @returns ログの配列
+   */
+  getLogs(): string[] {
+    return [...this.logs]; // コピーを返す
+  }
+
+  /**
+   * ログをクリアする
+   */
+  clearLogs(): void {
+    this.logs = [];
+  }
+
+  /**
+   * ログを追加する
+   * @param message - ログメッセージ
+   */
+  private addLog(message: string): void {
+    this.logs.push(message);
+  }
+
+  /**
+   * セッション管理付きでMCPClientを実行する
+   * MCPサーバーへの接続、ツールリスト取得、Anthropic API呼び出しを1回で実行
+   * @param callback - MCPClientインスタンスを受け取る関数
+   */
+  static async session(callback: (mcpClient: MCPClient) => Promise<void>) {
+    const mcpClient = new MCPClient();
+    try {
+      await callback(mcpClient);
+    } catch (error) {
+      console.error("Error during MCPClient:", error);
+      throw error;
+    } finally {
+      await mcpClient.cleanUp();
+    }
+  }
+
+  /**
+   * MCPサーバーへの接続からAnthropc API呼び出しまでを一括実行
+   * @param apiKey - Anthropic APIキー
+   * @param mcpJsonPath - MCP設定ファイルのパス
+   * @param userMessage - ユーザーメッセージ
+   * @param serverName - サーバー名（デフォルト: "ipinfo"）
+   */
+  async execute(
+    apiKey: string,
+    mcpJsonPath: string,
+    userMessage: string,
+    serverName: string = "ipinfo",
+  ) {
+    // Anthropic APIキーを設定
+    this.anthropic = new Anthropic({
+      apiKey: apiKey,
+    });
+
+    // MCPサーバーに接続
+    await this.initialConnect(mcpJsonPath, serverName);
+
+    // ツールリストを取得
+    const tools = await this.listTools();
+
+    // Anthropic APIを呼び出してツールを実行
+    await this.callAnthropicApi(userMessage, tools);
+  }
+
+  /**
+   * MCPサーバーに接続する
+   * @param mcpJsonPath - MCPサーバー設定ファイルのパス
    * @param serverName - サーバー名
+   */
+  async initialConnect(mcpJsonPath: string, serverName: string): Promise<void> {
+    const mcpParams = getMcpParams(mcpJsonPath, serverName);
+
+    // コマンド実行形式の場合
+    if (typeof mcpParams === "object") {
+      const { command, args, env } = mcpParams;
+
+      // MCPサーバーに接続する
+      this.transport = new StdioClientTransport({
+        command: command,
+        args: args,
+        env: env,
+      });
+    } else {
+      // URL形式の場合（現在は未実装）
+      throw new Error("URL-based MCP servers are not yet supported");
+    }
+
+    try {
+      this.mcp = new Client({ name: "mcp-client", version: "0.0.1" });
+      await this.mcp.connect(this.transport);
+      this.addLog("Successfully connected to MCP server");
+    } catch (error) {
+      console.error("Failed to connect to MCP server:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * MCPサーバーからツールリストを取得する
    * @returns Tool[] - ツールのリスト
    */
-  async initialConnect(mcpJson: any, serverName: string): Promise<Tool[]> {
-    const command = getMcpParams(mcpJson, serverName, "command").command;
-    if (!command) {
-      throw new Error(`Command for server ${serverName} is not defined`);
-    }
-    const args = getMcpParams(mcpJson, serverName, "args").args || [];
-    const env = getMcpParams(mcpJson, serverName, "env").env || {};
-
-    // MCPサーバーに接続する
-    this.transport = new StdioClientTransport({
-      command: command,
-      args: args,
-      env: env,
-    });
+  async listTools(): Promise<Tool[]> {
     try {
-      await this.mcp.connect(this.transport);
       const toolsResult = await this.mcp.listTools();
       const tools = toolsResult.tools.map((tool) => {
         return {
@@ -64,10 +140,10 @@ export class MCPClient {
           input_schema: tool.inputSchema,
         };
       });
-      console.log("Tools:\n", tools);
+      this.addLog("Tools:\n" + JSON.stringify(tools, null, 2));
       return tools;
     } catch (error) {
-      console.error("Failed to connect to MCP server:", error);
+      console.error("Failed to list tools:", error);
       throw error;
     }
   }
@@ -85,7 +161,7 @@ export class MCPClient {
         content: userMessage,
       },
     ];
-    console.log("=====Request to Anthropic API=====\n", messages);
+    this.addLog("=====Request to Anthropic API=====\n" + JSON.stringify(messages, null, 2));
 
     // ユーザの入力をもとにどのツールを使うべきかを決定するためにAnthropic APIを叩く
     const response = await this.anthropic.messages.create({
@@ -94,11 +170,11 @@ export class MCPClient {
       messages,
       tools: tools,
     });
-    console.log("=====Response from Anthropic API=====:\n", response);
+    this.addLog("=====Response from Anthropic API=====:\n" + JSON.stringify(response, null, 2));
 
     for (const content of response.content) {
       if (content.type === "text") {
-        console.log(content.text);
+        this.addLog(content.text);
         continue;
       }
       if (content.type === "tool_use") {
@@ -110,7 +186,7 @@ export class MCPClient {
           name: toolName,
           arguments: toolArgs,
         });
-        console.log("=====MCP Server Tool result=====\n:", toolResult);
+        this.addLog("=====MCP Server Tool result=====\n" + JSON.stringify(toolResult, null, 2));
 
         messages.push({
           role: "user",
@@ -123,11 +199,11 @@ export class MCPClient {
           messages,
         });
         // textのレスポンスなら内容を出力，tool_use等之レスポンスならno text responseを出力する
-        console.log(
-          "=====Response from Anthropic API after tool use=====\n",
-          toolResultFeedBack.content[0].type === "text"
+        this.addLog(
+          "=====Response from Anthropic API after tool use=====\n" +
+          (toolResultFeedBack.content[0].type === "text"
             ? toolResultFeedBack.content[0].text
-            : "not text response",
+            : "not text response")
         );
       }
     }

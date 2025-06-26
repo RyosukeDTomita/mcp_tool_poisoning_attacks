@@ -1,60 +1,98 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MCPClient = void 0;
-const tslib_1 = require("tslib");
 const sdk_1 = require("@anthropic-ai/sdk");
 const index_js_1 = require("@modelcontextprotocol/sdk/client/index.js");
 const stdio_js_1 = require("@modelcontextprotocol/sdk/client/stdio.js");
-const promises_1 = tslib_1.__importDefault(require("readline/promises"));
-const config_1 = require("./config");
+const mcp_settings_loader_1 = require("./mcp_settings_loader");
 /**
  * MCP（Model Context Protocol）クライアントクラス
  */
 class MCPClient {
-  anthropic;
+  anthropic; // definite assignment assertion
   mcp;
   transport; // definite assignment assertion
   /**
    * MCPClientのコンストラクタ
-   *
-   * @param ANTHROPIC_API_KEY - Anthropic APIの認証キー
-   * @throws Error - ANTHROPIC_API_KEYが指定されていない場合
    */
-  constructor(ANTHROPIC_API_KEY) {
-    if (!ANTHROPIC_API_KEY) {
-      throw new Error("ANTHROPIC_API_KEY is required");
-    }
-    this.anthropic = new sdk_1.Anthropic({
-      apiKey: ANTHROPIC_API_KEY,
-    });
+  constructor() {
     this.mcp = new index_js_1.Client({ name: "mcp-client", version: "0.0.1" });
   }
   /**
-   * MCPサーバーに接続し，ツールリストを取得する
-   * @param mcpJson - MCPサーバー設定ファイルをパースしたJSON
+   * セッション管理付きでMCPClientを実行する
+   * MCPサーバーへの接続、ツールリスト取得、Anthropic API呼び出しを1回で実行
+   * @param callback - MCPClientインスタンスを受け取る関数
+   */
+  static async session(callback) {
+    const mcpClient = new MCPClient();
+    try {
+      await callback(mcpClient);
+    } catch (error) {
+      console.error("Error during MCPClient:", error);
+      throw error;
+    } finally {
+      await mcpClient.cleanUp();
+    }
+  }
+  /**
+   * MCPサーバーへの接続からAnthropc API呼び出しまでを一括実行
+   * @param apiKey - Anthropic APIキー
+   * @param mcpJsonPath - MCP設定ファイルのパス
+   * @param userMessage - ユーザーメッセージ
+   * @param serverName - サーバー名（デフォルト: "ipinfo"）
+   */
+  async execute(apiKey, mcpJsonPath, userMessage, serverName = "ipinfo") {
+    // Anthropic APIキーを設定
+    this.anthropic = new sdk_1.Anthropic({
+      apiKey: apiKey,
+    });
+    // MCPサーバーに接続
+    await this.initialConnect(mcpJsonPath, serverName);
+    // ツールリストを取得
+    const tools = await this.listTools();
+    // Anthropic APIを呼び出してツールを実行
+    await this.callAnthropicApi(userMessage, tools);
+  }
+  /**
+   * MCPサーバーに接続する
+   * @param mcpJsonPath - MCPサーバー設定ファイルのパス
    * @param serverName - サーバー名
+   */
+  async initialConnect(mcpJsonPath, serverName) {
+    const mcpParams = (0, mcp_settings_loader_1.getMcpParams)(
+      mcpJsonPath,
+      serverName,
+    );
+    // コマンド実行形式の場合
+    if (typeof mcpParams === "object") {
+      const { command, args, env } = mcpParams;
+      // MCPサーバーに接続する
+      this.transport = new stdio_js_1.StdioClientTransport({
+        command: command,
+        args: args,
+        env: env,
+      });
+    } else {
+      // URL形式の場合（現在は未実装）
+      throw new Error("URL-based MCP servers are not yet supported");
+    }
+    try {
+      this.mcp = new index_js_1.Client({
+        name: "mcp-client",
+        version: "0.0.1",
+      });
+      await this.mcp.connect(this.transport);
+      console.log("Successfully connected to MCP server");
+    } catch (error) {
+      console.error("Failed to connect to MCP server:", error);
+      throw error;
+    }
+  }
+  /**
+   * MCPサーバーからツールリストを取得する
    * @returns Tool[] - ツールのリスト
    */
-  async initialConnect(mcpJson, serverName) {
-    const command = (0, config_1.getMcpParams)(
-      mcpJson,
-      serverName,
-      "command",
-    ).command;
-    if (!command) {
-      throw new Error(`Command for server ${serverName} is not defined`);
-    }
-    const args =
-      (0, config_1.getMcpParams)(mcpJson, serverName, "args").args || [];
-    const env =
-      (0, config_1.getMcpParams)(mcpJson, serverName, "env").env || {};
-    // MCPサーバーに接続する
-    this.transport = new stdio_js_1.StdioClientTransport({
-      command: command,
-      args: args,
-      env: env,
-    });
+  async listTools() {
     try {
-      await this.mcp.connect(this.transport);
       const toolsResult = await this.mcp.listTools();
       const tools = toolsResult.tools.map((tool) => {
         return {
@@ -66,22 +104,9 @@ class MCPClient {
       console.log("Tools:\n", tools);
       return tools;
     } catch (error) {
-      console.error("Failed to connect to MCP server:", error);
+      console.error("Failed to list tools:", error);
       throw error;
     }
-  }
-  /**
-   * ユーザからのメッセージを取得する
-   * @returns ユーザのメッセージ
-   */
-  async getUserMessage() {
-    const rl = promises_1.default.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-    const userMessage = await rl.question("Enter your message: ");
-    rl.close();
-    return userMessage;
   }
   /**
    * Anthropic APIを叩いてユーザのメッセージをもとに適切なツールを選択する。
