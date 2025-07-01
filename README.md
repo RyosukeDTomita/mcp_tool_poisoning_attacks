@@ -7,6 +7,7 @@
 ## INDEX
 
 - [ABOUT](#about)
+- [ARCHITECTURE](#architecture)
 - [ENVIRONMENT](#environment)
 - [PREPARING](#preparing)
 - [HOW TO USE](#how-to-use)
@@ -17,6 +18,36 @@
 ## ABOUT
 
 MCP Client and MCP Server
+
+---
+
+## ARCHITECTURE
+
+```plantuml
+@startuml
+actor User
+participant "MCPクライアント" as Client
+participant "MCPサーバ" as Server
+participant "Anthropic API" as Anthropic
+
+== 初期接続 ==
+Client -> Server : ツール一覧のリクエスト
+Server --> Client : 利用可能なツール一覧
+
+== ユーザからの依頼 ==
+User -> Client : タスクを依頼するメッセージ
+
+== 使用ツールの決定 ==
+Client -> Anthropic : ツール一覧とユーザメッセージを送信
+Anthropic --> Client : 使用すべきツール名を返す
+
+== ツールの実行 ==
+Client -> Server : 選択されたツールの実行を依頼
+Server --> Server : ツールを実行
+Server <- Client: ツールの実行結果を返す
+
+@enduml
+```
 
 ---
 
