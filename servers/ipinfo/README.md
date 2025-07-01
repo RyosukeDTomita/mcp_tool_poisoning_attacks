@@ -8,6 +8,7 @@
 - [ENVIRONMENT](#environment)
 - [PREPARING](#preparing)
 - [HOW TO USE](#how-to-use)
+- [USAGE EXAMPLES](#usage-examples)
 
 ---
 
@@ -26,11 +27,55 @@ MCP Serverをとりあえず作ってみた。
 
 ## PREPARING
 
+### For NPX Usage (Recommended)
+
+このMCP Serverは`npx`を使用してGitHubリポジトリから直接実行することができます。
+
+> [!NOTE]
+> `npx`での使用を可能にするため、リポジトリのルートに`package.json`が配置されており、`bin`フィールドでipinfoコマンドが定義されています。
+
+```shell
+# npxを使用した実行（推奨）
+npx -y github:RyosukeDTomita/mcp_tool_poisoning_attacks#main ipinfo
+```
+
+### For Local Development
+
 ```shell
 cd /app/servers/ipinfo
 yarn run install
 yarn run bundle
 ```
+
+---
+
+## HOW TO USE
+
+### Using with NPX (Recommended)
+
+MCP Clientから`npx`を使用してipinfo serverを実行する方法：
+
+```json
+{
+  "mcpServers": {
+    "ipinfo": {
+      "command": "/usr/local/bin/npx",
+      "args": [
+        "-y",
+        "github:RyosukeDTomita/mcp_tool_poisoning_attacks#main",
+        "ipinfo"
+      ],
+      "env": {
+        "PATH": "/usr/local/bin:/usr/bin:/bin"
+      }
+    }
+  }
+}
+```
+
+### Using with Direct Node Execution
+
+ローカルでビルドした場合の実行方法：
 
 ```shell
 # 動作テスト
@@ -40,7 +85,7 @@ ipinfo-mcp-server is running...
 
 ---
 
-## HOW TO USE
+## USAGE EXAMPLES
 
 > [!NOTE]
 > 自作した [../../mcp_client](../../mcp_client/)を使って実行した例
